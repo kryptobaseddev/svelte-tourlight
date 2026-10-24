@@ -1,0 +1,182 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://raw.githubusercontent.com/kryptobaseddev/svelte-tourlight/main/schema/tour.schema.json",
+	"title": "svelte-tourlight tour document",
+	"description": "Data-only tours for svelte-tourlight (format compatible with react-tourlight documents). Content is plain text. Handler names resolve only against the application registry. validateTourDocument also requires unique step ids, a target for interactive/advanceOn steps, and a formatted size of at most 4,000,000 UTF-8 bytes.",
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["schemaVersion", "id", "name", "steps"],
+	"properties": {
+		"$schema": {
+			"type": "string",
+			"maxLength": 2048,
+			"minLength": 1,
+			"pattern": "\\S"
+		},
+		"schemaVersion": {
+			"const": 1
+		},
+		"id": {
+			"type": "string",
+			"maxLength": 128,
+			"pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+		},
+		"name": {
+			"type": "string",
+			"maxLength": 200,
+			"minLength": 1,
+			"pattern": "\\S"
+		},
+		"description": {
+			"type": "string",
+			"maxLength": 5000
+		},
+		"steps": {
+			"type": "array",
+			"minItems": 1,
+			"maxItems": 200,
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": ["id", "title", "content"],
+				"properties": {
+					"id": {
+						"type": "string",
+						"maxLength": 128,
+						"pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+					},
+					"target": {
+						"type": "string",
+						"maxLength": 2048,
+						"minLength": 1,
+						"pattern": "\\S",
+						"description": "CSS selector. Omit for a centered step with no cutout."
+					},
+					"title": {
+						"type": "string",
+						"maxLength": 300,
+						"minLength": 1,
+						"pattern": "\\S"
+					},
+					"content": {
+						"type": "string",
+						"maxLength": 10000
+					},
+					"placement": {
+						"enum": ["top", "bottom", "left", "right", "auto"]
+					},
+					"route": {
+						"type": "string",
+						"maxLength": 2048,
+						"pattern": "^/(?!/)[^\\\\\\u0000-\\u0020]*$"
+					},
+					"interactive": {
+						"type": "boolean"
+					},
+					"disableOverlayClose": {
+						"type": "boolean"
+					},
+					"timeout": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 120000
+					},
+					"spotlightPadding": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 200
+					},
+					"spotlightRadius": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 1000
+					},
+					"action": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["label", "handler"],
+						"properties": {
+							"label": {
+								"type": "string",
+								"maxLength": 100,
+								"minLength": 1,
+								"pattern": "\\S"
+							},
+							"handler": {
+								"type": "string",
+								"maxLength": 128,
+								"pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+							}
+						}
+					},
+					"advanceOn": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": ["event"],
+						"properties": {
+							"event": {
+								"type": "string",
+								"maxLength": 128,
+								"minLength": 1,
+								"pattern": "\\S"
+							},
+							"selector": {
+								"type": "string",
+								"maxLength": 2048,
+								"minLength": 1,
+								"pattern": "\\S"
+							}
+						}
+					},
+					"condition": {
+						"type": "string",
+						"maxLength": 128,
+						"pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+					},
+					"beforeShow": {
+						"type": "string",
+						"maxLength": 128,
+						"pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+					},
+					"beforeStep": {
+						"type": "string",
+						"maxLength": 128,
+						"pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+					},
+					"afterShow": {
+						"type": "string",
+						"maxLength": 128,
+						"pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+					},
+					"onHide": {
+						"type": "string",
+						"maxLength": 128,
+						"pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+					}
+				},
+				"allOf": [
+					{
+						"if": {
+							"anyOf": [
+								{
+									"required": ["advanceOn"]
+								},
+								{
+									"properties": {
+										"interactive": {
+											"const": true
+										}
+									},
+									"required": ["interactive"]
+								}
+							]
+						},
+						"then": {
+							"required": ["target"]
+						}
+					}
+				]
+			}
+		}
+	}
+}

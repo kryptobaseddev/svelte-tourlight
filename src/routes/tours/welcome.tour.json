@@ -1,0 +1,45 @@
+{
+	"$schema": "../../../schema/tour.schema.json",
+	"schemaVersion": 1,
+	"id": "welcome",
+	"name": "Welcome tour",
+	"description": "A multi-page tour defined entirely as JSON.",
+	"steps": [
+		{
+			"id": "hello",
+			"title": "Welcome to svelte-tourlight",
+			"content": "This tour is a plain JSON document. It spans two pages, survives a reload, and one step waits for you to click the real button.",
+			"route": "/"
+		},
+		{
+			"id": "themes",
+			"target": "[data-tour=\"theme\"]",
+			"title": "Light, dark or auto",
+			"content": "Pick a theme. Every colour is a CSS variable you can override.",
+			"route": "/",
+			"placement": "bottom"
+		},
+		{
+			"id": "counter",
+			"target": "[data-tour=\"counter\"]",
+			"title": "Click the real button",
+			"content": "This step is interactive. Press the counter itself to continue.",
+			"route": "/",
+			"advanceOn": { "event": "click" }
+		},
+		{
+			"id": "settings",
+			"target": "[data-tour=\"notifications\"]",
+			"title": "Steps follow you across pages",
+			"content": "We navigated to Settings for you. Reload the page now and the tour picks up right here.",
+			"route": "/demo/settings",
+			"placement": "top"
+		},
+		{
+			"id": "done",
+			"title": "That's it",
+			"content": "Tours are data, so you can review them in pull requests and validate them against the JSON Schema.",
+			"route": "/demo/settings"
+		}
+	]
+}
