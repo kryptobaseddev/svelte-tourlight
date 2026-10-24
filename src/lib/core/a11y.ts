@@ -10,7 +10,7 @@ const FOCUSABLE = [
 export interface FocusTrap {
 	/** Start trapping Tab inside the container and move focus in. */
 	activate: () => void;
-	/** Stop trapping and restore the previously focused element. */
+	/** Stop trapping. The provider restores focus after inert is lifted. */
 	deactivate: () => void;
 }
 
@@ -23,8 +23,6 @@ export function createFocusTrap(
 	container: HTMLElement,
 	additional?: HTMLElement | null
 ): FocusTrap {
-	let previous: Element | null = null;
-
 	function focusable(): HTMLElement[] {
 		const roots = additional ? [container, additional] : [container];
 		return roots
@@ -73,7 +71,6 @@ export function createFocusTrap(
 
 	return {
 		activate() {
-			previous = document.activeElement;
 			document.addEventListener('keydown', handleKeyDown, true);
 			const items = focusable();
 			const primary = container.querySelector<HTMLElement>('[data-tourlight-primary]');
@@ -86,7 +83,6 @@ export function createFocusTrap(
 		},
 		deactivate() {
 			document.removeEventListener('keydown', handleKeyDown, true);
-			previous = null;
 		}
 	};
 }

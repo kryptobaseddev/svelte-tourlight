@@ -126,6 +126,8 @@ export class Tourlight {
 	isActive = $derived(this.activeTourId !== null || this.highlightStep !== null);
 
 	#options: () => TourlightOptions;
+	// Plain collections on purpose: #tick signals registration changes.
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	#tours = new Map<string, Registration>();
 	#tick = $state(0);
 	#machine: TourStateMachine | null = null;
@@ -134,6 +136,7 @@ export class Tourlight {
 	#highlightGeneration = 0;
 	#trigger: HTMLElement | null = null;
 	#reportedStep: number | null = null;
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	#resumed = new Set<string>();
 	#sheetQuery: MediaQuery | null;
 	#destroyed = false;

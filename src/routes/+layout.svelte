@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import { SpotlightProvider, SpotlightTour, type ThemeProp, type TourEvent } from '#lib';
 	import { compileTourDocument } from '#lib/document/index.js';
 	import welcome from './tours/welcome.tour.json';
@@ -39,11 +40,12 @@
 	<SpotlightTour id="welcome" {steps} />
 	<div class="shell">
 		<header class="bar">
-			<a class="brand" href="/">svelte-tourlight</a>
+			<a class="brand" href={resolve('/')}>svelte-tourlight</a>
 			<nav aria-label="Demo pages">
-				<a href="/" aria-current={page.url.pathname === '/' ? 'page' : undefined}>Home</a>
+				<a href={resolve('/')} aria-current={page.url.pathname === '/' ? 'page' : undefined}>Home</a
+				>
 				<a
-					href="/demo/settings"
+					href={resolve('/demo/settings')}
 					aria-current={page.url.pathname === '/demo/settings' ? 'page' : undefined}>Settings</a
 				>
 				<a href="https://github.com/kryptobaseddev/svelte-tourlight">GitHub</a>

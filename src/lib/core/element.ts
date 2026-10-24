@@ -86,9 +86,12 @@ export function waitForElement(
 			return;
 		}
 		let settled = false;
+		// Assigned after the first synchronous check, which may finish early.
+		/* eslint-disable prefer-const */
 		let observer: MutationObserver | undefined;
 		let timer: ReturnType<typeof setTimeout> | undefined;
 		let poll: ReturnType<typeof setInterval> | undefined;
+		/* eslint-enable prefer-const */
 		const finish = (element: HTMLElement | null) => {
 			if (settled) return;
 			settled = true;

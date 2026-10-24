@@ -31,7 +31,6 @@
 </script>
 
 <!-- The backdrop is a mouse convenience; Escape and the Close button are the keyboard paths. -->
-<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div
 	class="tourlight-overlay"
 	style:clip-path={clipPath}
@@ -42,7 +41,6 @@
 	onclick={passthrough ? undefined : handle}
 ></div>
 {#each blockers as [side, style] (side)}
-	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 	<div
 		class="tourlight-blocker"
 		style={styleOf(style)}
