@@ -62,6 +62,31 @@ describe('SpotlightProvider + SpotlightTour', () => {
 		await expect.element(start).toHaveFocus();
 	});
 
+	it('traps focus: Tab and Shift+Tab wrap inside the tour dialog', async () => {
+		render(Harness, { props: { steps: basic } });
+		await page.getByRole('button', { name: 'Start', exact: true }).click();
+		await expect.element(page.getByRole('button', { name: 'Next' })).toHaveFocus();
+		const box = document.querySelector<HTMLElement>('[role="dialog"]')!;
+		const items = Array.from(box.querySelectorAll<HTMLElement>('button:not([disabled])'));
+		expect(items.length).toBeGreaterThan(1);
+		const inside = () => box.contains(document.activeElement);
+
+		// A full cycle of Tab presses never leaves the dialog and lands back on Next
+		const start = document.activeElement;
+		for (let i = 0; i < items.length; i++) {
+			await userEvent.keyboard('{Tab}');
+			expect(inside()).toBe(true);
+		}
+		expect(document.activeElement).toBe(start);
+
+		// Tab from the last control wraps to the first; Shift+Tab from the first wraps to the last
+		items.at(-1)!.focus();
+		await userEvent.keyboard('{Tab}');
+		expect(document.activeElement).toBe(items[0]);
+		await userEvent.keyboard('{Shift>}{Tab}{/Shift}');
+		expect(document.activeElement).toBe(items.at(-1));
+	});
+
 	it('makes the page inert while a step shows', async () => {
 		render(Harness, { props: { steps: basic } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
