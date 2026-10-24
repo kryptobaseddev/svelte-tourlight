@@ -2,6 +2,7 @@ name: Release
 
 # Builds dist/ and commits it on a tag-only commit, so the tag installs as a
 # git dependency with no build step: pnpm add github:kryptobaseddev/svelte-tourlight#vX.Y.Z
+# Then creates the GitHub release and dispatches publish.yml for npm.
 on:
   workflow_dispatch:
     inputs:
@@ -11,6 +12,8 @@ on:
 
 permissions:
   contents: write
+  # Lets this job dispatch publish.yml (a GITHUB_TOKEN tag push does not trigger workflows).
+  actions: write
 
 jobs:
   release:
@@ -43,3 +46,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "v${{ inputs.version }}" --title "v${{ inputs.version }}" --notes-file RELEASE_NOTES.md --verify-tag
+      - name: Publish to npm
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publish.yml --ref "v${{ inputs.version }}" -f tag="v${{ inputs.version }}"

@@ -1,0 +1,57 @@
+name: Publish
+
+# Publishes to npm with trusted publishing (OIDC) and provenance; no token secret.
+# npmjs.com trusted publisher: user kryptobaseddev, repository svelte-tourlight,
+# workflow publish.yml, environment npm.
+# Runs on a pushed v* tag, or when release.yml dispatches it.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish, e.g. v0.1.2'
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: 'https://registry.npmjs.org'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Tag matches package.json version
+        run: test "v$(node -p "require('./package.json').version")" = "${{ inputs.tag || github.ref_name }}"
+      - name: Skip if this version is already on npm
+        id: exists
+        run: |
+          if npm view "svelte-tourlight@$(node -p "require('./package.json').version")" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.exists.outputs.published != 'true'
+        run: pnpm run check
+      - if: steps.exists.outputs.published != 'true'
+        run: pnpm run package
+      - if: steps.exists.outputs.published != 'true'
+        name: No test files in dist
+        run: test -z "$(find dist -name '*.spec.*' -o -name '*.test.*')"
+      # npm >= 11.5.1 exchanges the OIDC token itself; publishConfig sets access and provenance.
+      - if: steps.exists.outputs.published != 'true'
+        run: npm publish
