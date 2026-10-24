@@ -1,6 +1,6 @@
 {
 	"name": "svelte-tourlight",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "Svelte 5 product tours: spotlight cutouts, multi-page steps that survive reloads, click-the-real-button steps, pulsing beacons, keyboard and screen-reader support, and tours as JSON. A port inspired by react-tourlight.",
 	"license": "MIT",
 	"author": "kryptobaseddev",
@@ -8,7 +8,7 @@
 		"type": "git",
 		"url": "git+https://github.com/kryptobaseddev/svelte-tourlight.git"
 	},
-	"homepage": "https://github.com/kryptobaseddev/svelte-tourlight#readme",
+	"homepage": "https://kryptobaseddev.github.io/svelte-tourlight/",
 	"bugs": {
 		"url": "https://github.com/kryptobaseddev/svelte-tourlight/issues"
 	},
@@ -85,7 +85,7 @@
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
 		"@playwright/test": "^1.60.0",
-		"@sveltejs/adapter-auto": "^8.0.0",
+		"@sveltejs/adapter-static": "4.0.0",
 		"@sveltejs/kit": "^3.0.0",
 		"@sveltejs/package": "^2.5.8",
 		"@sveltejs/vite-plugin-svelte": "^7.2.0",

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createTourStateMachine } from '../lib/core/state-machine.js';
-import { buildRoutePath, isRouteActive } from '../lib/core/route.js';
+import { buildRoutePath, isRouteActive, stripBasePath, withBasePath } from '../lib/core/route.js';
 import { blockerRects, generateClipPath, generateEmptyClipPath } from '../lib/core/clip-path.js';
 import {
 	clearPersistedTour,
@@ -187,6 +187,16 @@ describe('isRouteActive', () => {
 		['/', '/', true]
 	])('%s vs %s → %s', (route, path, expected) => {
 		expect(isRouteActive(route, path)).toBe(expected);
+	});
+
+	it('strips and adds a base path', () => {
+		expect(stripBasePath('/svelte-tourlight/examples/a', '/svelte-tourlight')).toBe('/examples/a');
+		expect(stripBasePath('/svelte-tourlight', '/svelte-tourlight/')).toBe('/');
+		expect(stripBasePath('/svelte-tourlightx', '/svelte-tourlight')).toBe('/svelte-tourlightx');
+		expect(stripBasePath('/a', '')).toBe('/a');
+		expect(withBasePath('/examples/a', 'svelte-tourlight')).toBe('/svelte-tourlight/examples/a');
+		expect(withBasePath('/', '/svelte-tourlight')).toBe('/svelte-tourlight/');
+		expect(withBasePath('/a', undefined)).toBe('/a');
 	});
 
 	it('builds concrete paths from patterns', () => {

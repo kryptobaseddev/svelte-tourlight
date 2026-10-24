@@ -28,6 +28,8 @@ export {
 	createMemoryStorage,
 	isRouteActive,
 	buildRoutePath,
+	stripBasePath,
+	withBasePath,
 	getStepAriaLabel
 } from './core/index.js';
 export type * from './core/types.js';

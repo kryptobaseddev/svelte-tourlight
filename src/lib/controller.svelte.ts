@@ -4,7 +4,12 @@ import { prefersReducedMotion } from 'svelte/motion';
 import { createTourStateMachine, type TourStateMachine } from './core/state-machine.js';
 import { resolveTarget, scrollIntoView, waitForElement } from './core/element.js';
 import { trackTarget } from './core/target-tracker.js';
-import { getCurrentPath, isRouteActive as defaultIsRouteActive } from './core/route.js';
+import {
+	getCurrentPath,
+	isRouteActive as defaultIsRouteActive,
+	stripBasePath,
+	withBasePath
+} from './core/route.js';
 import {
 	DEFAULT_PERSIST_KEY,
 	clearPersistedTour,
@@ -62,6 +67,12 @@ export interface TourlightOptions {
 	 * your router: SvelteKit's `goto` works as is. A returned promise is awaited.
 	 */
 	navigate?: (path: string) => void | Promise<unknown>;
+	/**
+	 * The app's base path, for example SvelteKit's `base` from `$app/paths`.
+	 * Step routes are written without it: it is stripped before matching and
+	 * added to the path passed to `navigate`.
+	 */
+	basePath?: string;
 	/** Custom route matcher. Defaults to exact, `:param` and trailing `*` matching. */
 	isRouteActive?: (route: string, pathname: string) => boolean;
 	/** Scroll each target into view. Default true. */
@@ -415,7 +426,8 @@ export class Tourlight {
 	}
 
 	#matches(route: string): boolean {
-		return (this.options.isRouteActive ?? defaultIsRouteActive)(route, getCurrentPath());
+		const path = stripBasePath(getCurrentPath(), this.options.basePath);
+		return (this.options.isRouteActive ?? defaultIsRouteActive)(route, path);
 	}
 
 	#maybeResume(id: string) {
@@ -524,7 +536,8 @@ export class Tourlight {
 		void (async () => {
 			await step.onBeforeStep?.();
 			if (signal.aborted) return;
-			if (step.route && !this.#matches(step.route)) await this.options.navigate?.(step.route);
+			if (step.route && !this.#matches(step.route))
+				await this.options.navigate?.(withBasePath(step.route, this.options.basePath));
 			if (signal.aborted) return;
 
 			if (!step.target) {

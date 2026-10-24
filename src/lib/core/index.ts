@@ -31,7 +31,13 @@ export {
 	prefersReducedMotion,
 	type FocusTrap
 } from './a11y.js';
-export { getCurrentPath, isRouteActive, buildRoutePath } from './route.js';
+export {
+	getCurrentPath,
+	isRouteActive,
+	buildRoutePath,
+	stripBasePath,
+	withBasePath
+} from './route.js';
 export {
 	DEFAULT_PERSIST_KEY,
 	createMemoryStorage,

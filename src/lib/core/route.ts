@@ -55,3 +55,27 @@ export function buildRoutePath(route: string, params: Record<string, string> = {
 	});
 	return missing ? null : path;
 }
+
+/** Leading slash and no trailing slash, or '' when there is no base. */
+function normalizeBase(base: string | undefined): string {
+	if (!base || base === '/') return '';
+	return `/${base.replace(/^\/+|\/+$/g, '')}`;
+}
+
+/**
+ * Remove an app base path (for example SvelteKit's `paths.base`) from a
+ * pathname, so routes in tours can be written without it.
+ */
+export function stripBasePath(pathname: string, base: string | undefined): string {
+	const b = normalizeBase(base);
+	if (!b) return pathname;
+	if (pathname === b) return '/';
+	return pathname.startsWith(`${b}/`) ? pathname.slice(b.length) : pathname;
+}
+
+/** Prefix an app-relative route with the base path. */
+export function withBasePath(route: string, base: string | undefined): string {
+	const b = normalizeBase(base);
+	if (!b) return route;
+	return route === '/' ? `${b}/` : `${b}${route}`;
+}
