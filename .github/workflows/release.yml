@@ -1,0 +1,43 @@
+name: Release
+
+# Builds dist/ and commits it on a tag-only commit, so the tag installs as a
+# git dependency with no build step: pnpm add github:kryptobaseddev/svelte-tourlight#vX.Y.Z
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (must match package.json), e.g. 0.1.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check version
+        run: test "$(node -p "require('./package.json').version")" = "${{ inputs.version }}"
+      - run: pnpm run check
+      - run: pnpm run package
+      - name: Commit dist on a release commit and tag it
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --detach
+          git add -f dist
+          git commit -m "release: v${{ inputs.version }} (built dist)"
+          git tag -a "v${{ inputs.version }}" -m "v${{ inputs.version }}"
+          git push origin "v${{ inputs.version }}"
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "v${{ inputs.version }}" --title "v${{ inputs.version }}" --notes-file RELEASE_NOTES.md --verify-tag
