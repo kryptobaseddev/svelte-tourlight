@@ -79,7 +79,13 @@ export interface TourlightOptions {
 	autoScroll?: boolean;
 	/** Force reduced motion on or off. Default: follow the OS setting. */
 	reducedMotion?: boolean;
-	/** Below this viewport width (px) the tooltip becomes a bottom sheet. 0 disables. Default 640. */
+	/**
+	 * Where the phone sheet docks. `'auto'` (default) docks at the bottom, or at
+	 * the top when the target's centre is in the lower 45% of the viewport (a
+	 * fixed tab bar, for example). `'top'` and `'bottom'` force one side.
+	 */
+	sheetPosition?: 'auto' | 'top' | 'bottom';
+	/** Below this viewport width (px) the tooltip becomes a sheet. 0 disables. Default 640. */
 	mobileBreakpoint?: number;
 
 	onStart?: (tourId: string) => void;
@@ -183,9 +189,19 @@ export class Tourlight {
 		return this.options.reducedMotion ?? prefersReducedMotion.current;
 	}
 
-	/** The tooltip renders as a bottom sheet (narrow viewport). */
+	/** The tooltip renders as a sheet (narrow viewport). */
 	get isSheet(): boolean {
 		return this.#sheetQuery?.current ?? false;
+	}
+
+	/** Which edge the sheet docks to, or null when the tooltip floats. */
+	get sheetDock(): 'top' | 'bottom' | null {
+		if (!this.isSheet) return null;
+		const position = this.options.sheetPosition ?? 'auto';
+		if (position !== 'auto') return position;
+		const rect = this.targetRect;
+		if (!rect || typeof window === 'undefined') return 'bottom';
+		return rect.y + rect.height / 2 > window.innerHeight * 0.55 ? 'top' : 'bottom';
 	}
 
 	/** The current step lets real input through to its target. */
@@ -505,7 +521,8 @@ export class Tourlight {
 		if (this.options.autoScroll !== false) {
 			await scrollIntoView(el, {
 				smooth: !this.reducedMotion,
-				visibleFraction: this.isSheet ? 0.55 : 1
+				// Keep the target clear of the sheet: above a bottom sheet, below a top one.
+				band: !this.isSheet ? [0, 1] : this.options.sheetPosition === 'top' ? [0.45, 1] : [0, 0.55]
 			});
 		}
 		return signal.aborted ? null : el;

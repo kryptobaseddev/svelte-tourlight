@@ -12,10 +12,11 @@
 	interface Props extends TourlightOptions {
 		steps: SpotlightStep[];
 		beacon?: boolean;
+		tabbar?: boolean;
 		log?: TourEvent[];
 	}
 
-	let { steps, beacon = false, log = [], ...options }: Props = $props();
+	let { steps, beacon = false, tabbar = false, log = [], ...options }: Props = $props();
 	let clicks = $state(0);
 </script>
 
@@ -28,6 +29,11 @@
 		<input id="field" aria-label="Field" />
 		<Controls />
 	</main>
+	{#if tabbar}
+		<nav id="tabbar" aria-label="Tabs" style="position: fixed; inset: auto 0 0 0; height: 56px">
+			Tabs
+		</nav>
+	{/if}
 	{#if beacon}
 		<SpotlightBeacon target="#first" tour="demo" label="Show tips" />
 	{/if}

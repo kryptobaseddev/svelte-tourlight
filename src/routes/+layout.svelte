@@ -50,6 +50,7 @@
 <SpotlightProvider
 	{theme}
 	reducedMotion={site.reducedMotion}
+	sheetPosition={site.sheetPosition}
 	persist={storage}
 	{basePath}
 	navigate={(p) => goto(p)}

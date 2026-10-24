@@ -78,7 +78,7 @@ export function themeVar(token: keyof TourlightTheme): string {
 	return TOKEN_TO_VAR[token];
 }
 
-/** The base theme name for the `data-theme` attribute. */
+/** The base theme name for the `data-tourlight-theme` attribute. */
 export function themeName(theme: ThemeProp | undefined): 'light' | 'dark' | 'auto' {
 	if (!theme) return 'light';
 	if (typeof theme === 'string') return theme;

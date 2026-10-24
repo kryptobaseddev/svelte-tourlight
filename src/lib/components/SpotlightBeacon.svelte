@@ -154,7 +154,7 @@
 	<button
 		type="button"
 		class={['tourlight-root', 'tourlight-beacon', className]}
-		data-theme={themeName(spotlight.options.theme)}
+		data-tourlight-theme={themeName(spotlight.options.theme)}
 		data-reduced-motion={spotlight.reducedMotion ? '' : undefined}
 		data-tourlight-beacon=""
 		style={themeStyle(spotlight.options.theme)}

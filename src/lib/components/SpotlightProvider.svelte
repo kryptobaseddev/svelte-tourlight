@@ -96,7 +96,7 @@
 		{#if tour.isActive && step}
 			<div
 				class="tourlight-root"
-				data-theme={themeName(tour.options.theme)}
+				data-tourlight-theme={themeName(tour.options.theme)}
 				data-reduced-motion={tour.reducedMotion ? '' : undefined}
 				style={themeStyle(tour.options.theme)}
 			>
@@ -120,7 +120,7 @@
 						currentIndex={index}
 						totalSteps={total}
 						{isHighlight}
-						sheet={tour.isSheet}
+						sheet={tour.sheetDock}
 						interactive={tour.isInteractive}
 						showProgress={tour.options.showProgress ?? true}
 						showSkip={tour.options.showSkip ?? true}

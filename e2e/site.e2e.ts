@@ -112,6 +112,35 @@ test('forced reduced motion removes the tooltip transition', async ({ page }) =>
 	expect(duration.split(',').every((d) => parseFloat(d) === 0)).toBe(true);
 });
 
+test('phone sheet docks at the top for a fixed tab bar, or as forced', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 760 });
+	for (const [mode, expected] of [
+		['auto', 'top'],
+		['bottom', 'bottom']
+	] as const) {
+		await fresh(page, `./examples/mobile/frame?sheet=${mode}`);
+		await page.getByRole('button', { name: 'Start phone tour' }).click();
+		await page.keyboard.press('ArrowRight');
+		await page.keyboard.press('ArrowRight');
+		await expect(dialog(page).getByRole('heading', { name: 'A fixed tab bar' })).toBeVisible();
+		await expect(page.locator('.tourlight-tooltip')).toHaveAttribute('data-sheet', expected);
+		if (expected === 'top') {
+			const sheet = (await page.locator('.tourlight-tooltip').boundingBox())!;
+			const bar = (await page.getByRole('navigation', { name: 'App sections' }).boundingBox())!;
+			expect(sheet.y + sheet.height).toBeLessThanOrEqual(bar.y);
+		}
+	}
+});
+
+test('overlay uses a scoped theme attribute (daisyUI-safe)', async ({ page }) => {
+	await fresh(page, './examples/themes');
+	await page.getByRole('radio', { name: 'Dark' }).check({ force: true });
+	await page.getByRole('button', { name: 'Preview theme' }).click();
+	const root = page.locator('.tourlight-root').first();
+	await expect(root).toHaveAttribute('data-tourlight-theme', 'dark');
+	expect(await root.getAttribute('data-theme')).toBeNull();
+});
+
 for (const width of [320, 390, 768, 1280]) {
 	test(`every page fits at ${width}px`, async ({ page }) => {
 		await page.setViewportSize({ width, height: 800 });

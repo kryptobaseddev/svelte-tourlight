@@ -151,6 +151,9 @@ export const themes = `<!-- Built in -->
 <!-- Custom tokens on top of a base -->
 <SpotlightProvider theme={{ base: 'dark', primary: '#f59e0b', radius: '4px' }}>
 
+/* The root carries data-tourlight-theme="dark", never data-theme,
+   so daisyUI's [data-theme] themes don't leak into the overlay. */
+
 /* Or plain CSS, using your design tokens */
 .tourlight-root {
   --tourlight-primary: var(--color-primary);
@@ -159,8 +162,13 @@ export const themes = `<!-- Built in -->
   --tourlight-z-tooltip: 61;
 }`;
 
-export const mobile = `<!-- Default: a bottom sheet below 640px -->
-<SpotlightProvider>
+export const mobile = `<!-- Default: a sheet below 640px, docked at the bottom,
+     or at the top when the target sits in the lower 45% -->
+<SpotlightProvider sheetPosition="auto">
+
+<!-- Force a side -->
+<SpotlightProvider sheetPosition="top">
+<SpotlightProvider sheetPosition="bottom">
 
 <!-- Change the breakpoint, or 0 to always float -->
 <SpotlightProvider mobileBreakpoint={768}>

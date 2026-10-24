@@ -20,8 +20,8 @@
 		currentIndex: number;
 		totalSteps: number;
 		isHighlight: boolean;
-		/** Render as a bottom sheet. */
-		sheet: boolean;
+		/** Render as a sheet docked to this edge, or float when null. */
+		sheet: 'top' | 'bottom' | null;
 		interactive: boolean;
 		showProgress: boolean;
 		showSkip: boolean;
@@ -170,7 +170,7 @@
 	aria-describedby={tooltip ? undefined : contentId}
 	aria-label={tooltip ? step.title : undefined}
 	data-shown={shown ? '' : undefined}
-	data-sheet={sheet ? '' : undefined}
+	data-sheet={sheet ?? undefined}
 	data-centered={centered && !sheet ? '' : undefined}
 	data-side={side}
 >

@@ -166,7 +166,7 @@ describe('SpotlightProvider + SpotlightTour', () => {
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.element(dialog()).toBeVisible();
 		const tooltip = document.querySelector<HTMLElement>('.tourlight-tooltip')!;
-		expect(tooltip.hasAttribute('data-sheet')).toBe(true);
+		expect(tooltip.dataset.sheet).toBe('bottom');
 		// Wait for the slide-up transition to settle.
 		await expect
 			.poll(() => Math.round(tooltip.getBoundingClientRect().bottom))
@@ -174,6 +174,37 @@ describe('SpotlightProvider + SpotlightTour', () => {
 		const buttons = [...tooltip.querySelectorAll<HTMLElement>('button')];
 		for (const b of buttons) expect(b.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
 		await page.viewport(1280, 800);
+	});
+
+	it('docks the sheet at the top when the target sits low (fixed tab bar)', async () => {
+		await page.viewport(375, 700);
+		render(Harness, {
+			props: {
+				steps: [{ id: 'tabs', target: '#tabbar', title: 'Tabs', content: 'Down here.' }],
+				tabbar: true
+			}
+		});
+		await page.getByRole('button', { name: 'Start', exact: true }).click();
+		await expect.element(dialog()).toBeVisible();
+		const tooltip = document.querySelector<HTMLElement>('.tourlight-tooltip')!;
+		expect(tooltip.dataset.sheet).toBe('top');
+		await expect.poll(() => Math.round(tooltip.getBoundingClientRect().top)).toBe(0);
+		const bar = document.querySelector('#tabbar')!.getBoundingClientRect();
+		expect(tooltip.getBoundingClientRect().bottom).toBeLessThanOrEqual(bar.top);
+	});
+
+	it('respects a forced sheetPosition', async () => {
+		await page.viewport(375, 700);
+		render(Harness, {
+			props: {
+				steps: [{ id: 'tabs', target: '#tabbar', title: 'Tabs', content: '' }],
+				tabbar: true,
+				sheetPosition: 'bottom'
+			}
+		});
+		await page.getByRole('button', { name: 'Start', exact: true }).click();
+		await expect.element(dialog()).toBeVisible();
+		expect(document.querySelector<HTMLElement>('.tourlight-tooltip')!.dataset.sheet).toBe('bottom');
 	});
 
 	it('applies a custom theme and forced reduced motion', async () => {
@@ -185,7 +216,9 @@ describe('SpotlightProvider + SpotlightTour', () => {
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.element(dialog()).toBeVisible();
 		const root = document.querySelector<HTMLElement>('.tourlight-root')!;
-		expect(root.dataset.theme).toBe('dark');
+		expect(root.dataset.tourlightTheme).toBe('dark');
+		// A scoped attribute, so host themes keyed on data-theme (daisyUI) don't match.
+		expect(root.hasAttribute('data-theme')).toBe(false);
 		expect(root.hasAttribute('data-reduced-motion')).toBe(true);
 		const next = page.getByRole('button', { name: 'Next' }).element();
 		expect(getComputedStyle(next).backgroundColor).toBe('rgb(1, 2, 3)');

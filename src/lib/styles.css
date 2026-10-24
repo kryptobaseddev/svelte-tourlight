@@ -30,7 +30,7 @@
 	--tourlight-z-tooltip: 9999;
 }
 
-:where(.tourlight-root[data-theme='dark']) {
+:where(.tourlight-root[data-tourlight-theme='dark']) {
 	--tourlight-overlay: rgba(0, 0, 0, 0.7);
 	--tourlight-bg: #1e1e2e;
 	--tourlight-fg: #e4e4ef;
@@ -50,7 +50,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	:where(.tourlight-root[data-theme='auto']) {
+	:where(.tourlight-root[data-tourlight-theme='auto']) {
 		--tourlight-overlay: rgba(0, 0, 0, 0.7);
 		--tourlight-bg: #1e1e2e;
 		--tourlight-fg: #e4e4ef;
@@ -155,7 +155,7 @@
 	transform: translate(-50%, -50%);
 }
 
-/* Bottom sheet on phones. */
+/* Sheet on phones: docked at the bottom, or at the top for low targets. */
 .tourlight-tooltip[data-sheet] {
 	top: auto;
 	right: 0;
@@ -173,6 +173,15 @@
 
 .tourlight-tooltip[data-sheet][data-shown] {
 	transform: none;
+}
+
+.tourlight-tooltip[data-sheet='top'] {
+	top: 0;
+	bottom: auto;
+	padding-top: calc(var(--tourlight-padding) + env(safe-area-inset-top, 0px));
+	padding-bottom: var(--tourlight-padding);
+	border-radius: 0 0 var(--tourlight-radius) var(--tourlight-radius);
+	transform: translateY(-16px);
 }
 
 .tourlight-title {

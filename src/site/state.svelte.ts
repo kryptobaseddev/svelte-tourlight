@@ -7,6 +7,7 @@ export const site = $state({
 	theme: 'auto' as ThemeChoice,
 	/** undefined follows the OS setting. */
 	reducedMotion: undefined as boolean | undefined,
+	sheetPosition: 'auto' as 'auto' | 'top' | 'bottom',
 	events: [] as { at: string; text: string }[]
 });
 

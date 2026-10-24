@@ -53,4 +53,14 @@
 	<div class="mock-app" data-tour="theme-card">
 		<p class="muted">The setting applies to every demo on this site until you change it.</p>
 	</div>
+	<div class="mock-app">
+		<h2 class="h3">Using daisyUI or another <code>data-theme</code> system?</h2>
+		<p class="muted">
+			The overlay root is marked <code>data-tourlight-theme</code>, not <code>data-theme</code>.
+			daisyUI switches its themes on <code>[data-theme]</code>, so a dark tour no longer pulls
+			daisyUI's dark <code>--color-*</code> values into the overlay. To match your app, map the
+			tokens yourself:
+			<code>.tourlight-root &#123; --tourlight-primary: var(--color-primary) &#125;</code>.
+		</p>
+	</div>
 </Example>

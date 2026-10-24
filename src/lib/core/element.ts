@@ -125,6 +125,12 @@ export interface ScrollIntoViewOptions {
 	 * above the sheet. Default 1 (anywhere on screen).
 	 */
 	visibleFraction?: number;
+	/**
+	 * The vertical band, as `[start, end]` fractions of the viewport height,
+	 * that the target should sit inside. Wins over `visibleFraction`. A
+	 * top-docked sheet passes `[0.45, 1]` so the target lands below it.
+	 */
+	band?: [number, number];
 }
 
 /**
@@ -135,15 +141,16 @@ export function scrollIntoView(
 	element: HTMLElement,
 	options: ScrollIntoViewOptions = {}
 ): Promise<void> {
-	const fraction = options.visibleFraction ?? 1;
+	const [from, to] = options.band ?? [0, options.visibleFraction ?? 1];
 	const rect = element.getBoundingClientRect();
-	const limit = window.innerHeight * fraction;
-	const inView = rect.top >= 0 && rect.bottom <= limit;
+	const start = window.innerHeight * from;
+	const end = window.innerHeight * to;
+	const inView = rect.top >= start && rect.bottom <= end;
 	if (!inView) {
 		const behavior: ScrollBehavior = options.smooth ? 'smooth' : 'auto';
-		if (fraction < 1) {
+		if (from > 0 || to < 1) {
 			// Put the target's centre in the middle of the allowed band.
-			const delta = rect.top + rect.height / 2 - limit / 2;
+			const delta = rect.top + rect.height / 2 - (start + end) / 2;
 			window.scrollBy({ top: delta, behavior });
 		} else {
 			element.scrollIntoView({ block: 'center', inline: 'nearest', behavior });

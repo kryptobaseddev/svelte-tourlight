@@ -754,6 +754,37 @@ h2 {
 	min-width: 0;
 }
 
+.tabbar {
+	position: fixed;
+	inset: auto 0 0 0;
+	display: flex;
+	justify-content: space-around;
+	padding-bottom: env(safe-area-inset-bottom, 0px);
+	border-top: 1px solid var(--line);
+	background: var(--surface);
+}
+
+.tabbar button {
+	display: inline-flex;
+	align-items: center;
+	min-height: 56px;
+	padding: 0 12px;
+	border: 0;
+	background: transparent;
+	color: var(--muted);
+	font: inherit;
+	cursor: pointer;
+}
+
+.tabbar button[aria-current='page'] {
+	color: var(--accent);
+	font-weight: 600;
+}
+
+.frame {
+	padding-bottom: 72px;
+}
+
 /* ---- Headless demo ---- */
 
 .custom-card {

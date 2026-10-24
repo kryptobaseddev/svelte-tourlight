@@ -56,12 +56,16 @@ Start it from any component with `useSpotlight().start('onboarding')`. The [Gett
 - **Interactive steps** that finish when the user clicks the real button (`advanceOn`)
 - **Beacons** (pulsing hint dots) and **one-off highlights**
 - **Accessible**: dialog semantics, focus trap, inert background, arrow and Escape keys, live announcements, 44px controls
-- **Phone bottom sheet** below 640px
+- **Phone sheet** below 640px that docks away from low targets such as fixed tab bars
 - **Reduced motion** that follows the OS setting or a prop
 - **Themes**: light, dark, auto, or custom tokens, all as CSS variables
 - **JSON tours** with a JSON Schema and path-level validation; documents never run code
 - **Analytics** through a single `onEvent` stream
 - **Headless core** for fully custom UIs
+
+## Theming
+
+Pass `theme="light" | "dark" | "auto"` or `{ base, ...tokens }`, or set the `--tourlight-*` variables on `.tourlight-root` in your own CSS. The overlay is marked with `data-tourlight-theme`, never `data-theme`, so **daisyUI** (and other systems that switch themes on `[data-theme]`) don't redefine `--color-*` inside the tour. To use your daisyUI colours, map them: `.tourlight-root { --tourlight-primary: var(--color-primary); }`.
 
 ## Why Svelte, not React
 
@@ -79,7 +83,7 @@ Our app is SvelteKit with Svelte 5. Using [react-tourlight](https://github.com/b
 | `SpotlightBeacon`, `SpotlightHighlight`    | Hint dots and one-off callouts                                                      | [Beacons](https://kryptobaseddev.github.io/svelte-tourlight/examples/beacons)               |
 | `svelte-tourlight/document`                | `validateTourDocument`, `compileTourDocument`, schema                               | [JSON tours](https://kryptobaseddev.github.io/svelte-tourlight/examples/json)               |
 | `theme`                                    | Light, dark, auto, custom tokens                                                    | [Themes](https://kryptobaseddev.github.io/svelte-tourlight/examples/themes)                 |
-| `mobileBreakpoint`                         | Bottom sheet on phones                                                              | [Phone](https://kryptobaseddev.github.io/svelte-tourlight/examples/mobile)                  |
+| `sheetPosition`, `mobileBreakpoint`        | Phone sheet, docked away from low targets                                           | [Phone](https://kryptobaseddev.github.io/svelte-tourlight/examples/mobile)                  |
 | Built-in a11y, `labels`                    | Keys, focus, announcements, i18n                                                    | [Accessibility](https://kryptobaseddev.github.io/svelte-tourlight/examples/accessibility)   |
 | `reducedMotion`                            | Force or follow the OS setting                                                      | [Reduced motion](https://kryptobaseddev.github.io/svelte-tourlight/examples/reduced-motion) |
 | `onEvent` and callbacks                    | Analytics                                                                           | [Analytics](https://kryptobaseddev.github.io/svelte-tourlight/examples/analytics)           |
