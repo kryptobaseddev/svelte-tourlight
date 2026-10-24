@@ -1,0 +1,11 @@
+export { default as SpotlightProvider } from './components/SpotlightProvider.svelte';
+export { default as SpotlightTour } from './components/SpotlightTour.svelte';
+export { default as SpotlightBeacon, type BeaconPosition } from './components/SpotlightBeacon.svelte';
+export { default as SpotlightHighlight } from './components/SpotlightHighlight.svelte';
+export { default as SpotlightTooltip } from './components/SpotlightTooltip.svelte';
+export { default as SpotlightOverlay } from './components/SpotlightOverlay.svelte';
+export { portal, type PortalTarget } from './components/portal.js';
+export { Tourlight, useSpotlight, setTourlightContext, hasTourlightContext, type TourlightOptions } from './controller.svelte.js';
+export { themeName, themeStyle, themeVar, type TourlightTheme, type TourlightThemeInput, type ThemeProp } from './themes.js';
+export { createMemoryStorage, isRouteActive, buildRoutePath, getStepAriaLabel } from './core/index.js';
+export type * from './core/types.js';
