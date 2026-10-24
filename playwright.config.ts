@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 	webServer: {
-		command: 'pnpm run preview --port 4173 --strictPort',
+		// Run vite directly: a package-manager wrapper can outlive Playwright's teardown.
+		command: './node_modules/.bin/vite preview --port 4173 --strictPort',
 		url: 'http://localhost:4173',
 		reuseExistingServer: !process.env.CI,
 		stdout: 'pipe',
