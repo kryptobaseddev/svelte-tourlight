@@ -12,14 +12,14 @@
 	interface Props extends TourlightOptions {
 		steps: SpotlightStep[];
 		beacon?: boolean;
-		events?: TourEvent[];
+		log?: TourEvent[];
 	}
 
-	let { steps, beacon = false, events = [], ...options }: Props = $props();
+	let { steps, beacon = false, log = [], ...options }: Props = $props();
 	let clicks = $state(0);
 </script>
 
-<SpotlightProvider {...options} onEvent={(e) => events.push(e)}>
+<SpotlightProvider {...options} onEvent={(e) => log.push(e)}>
 	<SpotlightTour id="demo" {steps} />
 	<main>
 		<button id="first" type="button">First</button>

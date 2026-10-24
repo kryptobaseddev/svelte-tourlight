@@ -1,5 +1,5 @@
 import { page, userEvent } from 'vitest/browser';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { createMemoryStorage, type SpotlightStep, type TourEvent } from '../lib/index.js';
 import Harness from './Harness.svelte';
@@ -11,6 +11,10 @@ const basic: SpotlightStep[] = [
 
 const dialog = () => page.getByRole('dialog');
 
+beforeEach(async () => {
+	await page.viewport(1280, 800);
+});
+
 afterEach(() => {
 	document.body.querySelectorAll('.tourlight-portal').forEach((n) => n.remove());
 });
@@ -18,7 +22,7 @@ afterEach(() => {
 describe('SpotlightProvider + SpotlightTour', () => {
 	it('shows a spotlight dialog and walks the steps with buttons', async () => {
 		const events: TourEvent[] = [];
-		render(Harness, { steps: basic, events });
+		render(Harness, { props: { steps: basic, log: events } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 
 		await expect.element(dialog()).toBeVisible();
@@ -35,7 +39,7 @@ describe('SpotlightProvider + SpotlightTour', () => {
 	});
 
 	it('announces each step in a live region', async () => {
-		render(Harness, { steps: basic });
+		render(Harness, { props: { steps: basic } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.element(dialog()).toBeVisible();
 		const live = document.querySelector('[aria-live="polite"]');
@@ -44,7 +48,7 @@ describe('SpotlightProvider + SpotlightTour', () => {
 
 	it('supports keyboard: arrows navigate, Escape skips and focus returns', async () => {
 		const events: TourEvent[] = [];
-		render(Harness, { steps: basic, events });
+		render(Harness, { props: { steps: basic, log: events } });
 		const start = page.getByRole('button', { name: 'Start', exact: true });
 		await start.click();
 		await expect.element(page.getByRole('button', { name: 'Next' })).toHaveFocus();
@@ -59,7 +63,7 @@ describe('SpotlightProvider + SpotlightTour', () => {
 	});
 
 	it('makes the page inert while a step shows', async () => {
-		render(Harness, { steps: basic });
+		render(Harness, { props: { steps: basic } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.element(dialog()).toBeVisible();
 		expect(document.querySelector('main')?.closest('[inert]')).not.toBeNull();
@@ -68,7 +72,7 @@ describe('SpotlightProvider + SpotlightTour', () => {
 	});
 
 	it('starts at step N', async () => {
-		render(Harness, { steps: basic });
+		render(Harness, { props: { steps: basic } });
 		await page.getByRole('button', { name: 'Start at 2' }).click();
 		await expect.element(page.getByRole('heading', { name: 'Second thing' })).toBeVisible();
 	});
@@ -84,7 +88,7 @@ describe('SpotlightProvider + SpotlightTour', () => {
 			},
 			{ id: 'after', target: '#first', title: 'Nice', content: 'It worked.' }
 		];
-		render(Harness, { steps });
+		render(Harness, { props: { steps } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.element(page.getByRole('heading', { name: 'Click it' })).toBeVisible();
 		expect(document.querySelectorAll('.tourlight-blocker')).toHaveLength(4);
@@ -95,7 +99,9 @@ describe('SpotlightProvider + SpotlightTour', () => {
 	});
 
 	it('renders a centered step when there is no target', async () => {
-		render(Harness, { steps: [{ id: 'hi', title: 'Welcome', content: 'No target here.' }] });
+		render(Harness, {
+			props: { steps: [{ id: 'hi', title: 'Welcome', content: 'No target here.' }] }
+		});
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.element(dialog()).toBeVisible();
 		expect(document.querySelector('.tourlight-tooltip')?.hasAttribute('data-centered')).toBe(true);
@@ -107,7 +113,7 @@ describe('SpotlightProvider + SpotlightTour', () => {
 			{ id: 'missing', target: '#nope', title: 'Ghost', content: '', timeout: 50 },
 			basic[1]
 		];
-		render(Harness, { steps, events });
+		render(Harness, { props: { steps, log: events } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.element(page.getByRole('heading', { name: 'Second thing' })).toBeVisible();
 		expect(events.some((e) => e.type === 'target-missing')).toBe(true);
@@ -115,14 +121,14 @@ describe('SpotlightProvider + SpotlightTour', () => {
 
 	it('persists progress and resumes after a remount (reload)', async () => {
 		const storage = createMemoryStorage();
-		const first = render(Harness, { steps: basic, persist: storage });
+		const first = render(Harness, { props: { steps: basic, persist: storage } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await page.getByRole('button', { name: 'Next' }).click();
 		await expect.element(page.getByRole('heading', { name: 'Second thing' })).toBeVisible();
 		first.unmount();
 		document.body.querySelectorAll('.tourlight-portal').forEach((n) => n.remove());
 
-		render(Harness, { steps: basic, persist: storage });
+		render(Harness, { props: { steps: basic, persist: storage } });
 		await expect.element(page.getByRole('heading', { name: 'Second thing' })).toBeVisible();
 	});
 
@@ -138,13 +144,13 @@ describe('SpotlightProvider + SpotlightTour', () => {
 				timeout: 100
 			}
 		];
-		render(Harness, { steps, navigate: (path: string) => void visited.push(path) });
+		render(Harness, { props: { steps, navigate: (path: string) => void visited.push(path) } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.poll(() => visited).toEqual(['/somewhere-else']);
 	});
 
 	it('beacon starts the tour and hides while it runs', async () => {
-		render(Harness, { steps: basic, beacon: true });
+		render(Harness, { props: { steps: basic, beacon: true } });
 		const beacon = page.getByRole('button', { name: 'Show tips' });
 		await expect.element(beacon).toBeVisible();
 		const box = beacon.element().getBoundingClientRect();
@@ -156,12 +162,12 @@ describe('SpotlightProvider + SpotlightTour', () => {
 
 	it('uses a bottom sheet on narrow screens', async () => {
 		await page.viewport(375, 700);
-		render(Harness, { steps: basic });
+		render(Harness, { props: { steps: basic } });
 		await page.getByRole('button', { name: 'Start', exact: true }).click();
 		await expect.element(dialog()).toBeVisible();
 		const tooltip = document.querySelector<HTMLElement>('.tourlight-tooltip')!;
 		expect(tooltip.hasAttribute('data-sheet')).toBe(true);
-		expect(Math.round(tooltip.getBoundingClientRect().bottom)).toBe(700);
+		expect(Math.round(tooltip.getBoundingClientRect().bottom)).toBe(window.innerHeight);
 		const buttons = [...tooltip.querySelectorAll<HTMLElement>('button')];
 		for (const b of buttons) expect(b.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
 		await page.viewport(1280, 800);

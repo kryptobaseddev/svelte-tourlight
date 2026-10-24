@@ -207,7 +207,11 @@ export class Tourlight {
 	unregisterTour(id: string): void {
 		if (!this.#tours.delete(id)) return;
 		this.#tick++;
-		if (this.activeTourId === id) this.stop();
+		// Deferred: when the whole provider is unmounting, keep stored progress
+		// so the tour can resume on the next mount.
+		queueMicrotask(() => {
+			if (!this.#destroyed && this.activeTourId === id && !this.#tours.has(id)) this.stop();
+		});
 	}
 
 	/** Start a tour, optionally at a step. Only one tour runs at a time. */
