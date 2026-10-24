@@ -27,7 +27,7 @@ describe('SpotlightProvider + SpotlightTour', () => {
 
 		await expect.element(dialog()).toBeVisible();
 		await expect.element(page.getByRole('heading', { name: 'First thing' })).toBeVisible();
-		await expect.element(page.getByText('Step 1 of 2')).toBeVisible();
+		await expect.element(page.getByText('Step 1 of 2', { exact: true })).toBeVisible();
 		const overlay = document.querySelector<HTMLElement>('.tourlight-overlay')!;
 		expect(overlay.style.clipPath).toContain('evenodd');
 
@@ -167,7 +167,10 @@ describe('SpotlightProvider + SpotlightTour', () => {
 		await expect.element(dialog()).toBeVisible();
 		const tooltip = document.querySelector<HTMLElement>('.tourlight-tooltip')!;
 		expect(tooltip.hasAttribute('data-sheet')).toBe(true);
-		expect(Math.round(tooltip.getBoundingClientRect().bottom)).toBe(window.innerHeight);
+		// Wait for the slide-up transition to settle.
+		await expect
+			.poll(() => Math.round(tooltip.getBoundingClientRect().bottom))
+			.toBe(window.innerHeight);
 		const buttons = [...tooltip.querySelectorAll<HTMLElement>('button')];
 		for (const b of buttons) expect(b.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
 		await page.viewport(1280, 800);
