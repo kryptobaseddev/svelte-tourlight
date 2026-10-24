@@ -22,7 +22,7 @@ svelte-tourlight is a Svelte 5 port of [react-tourlight](https://github.com/btah
 The package is not on npm yet. Install it from a Git tag:
 
 ```sh
-pnpm add github:kryptobaseddev/svelte-tourlight#v0.1.0
+pnpm add github:kryptobaseddev/svelte-tourlight#v0.1.1
 ```
 
 The release tag contains the built `dist/`, so no build step runs on install. Peer dependency: `svelte@^5`. Runtime dependency: `@floating-ui/dom`.

@@ -28,6 +28,8 @@ jobs:
         run: test "$(node -p "require('./package.json').version")" = "${{ inputs.version }}"
       - run: pnpm run check
       - run: pnpm run package
+      - name: No test files in dist
+        run: test -z "$(find dist -name '*.spec.*' -o -name '*.test.*')"
       - name: Commit dist on a release commit and tag it
         run: |
           git config user.name "github-actions[bot]"

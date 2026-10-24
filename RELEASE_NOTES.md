@@ -1,14 +1,18 @@
-First release of **svelte-tourlight**: Svelte 5 product tours, ported from [react-tourlight](https://github.com/btahir/react-tourlight) (MIT).
+Release of **svelte-tourlight**: Svelte 5 product tours, ported from [react-tourlight](https://github.com/btahir/react-tourlight) (MIT).
 
 Install from this tag (the package is not on npm yet):
 
 ```sh
-pnpm add github:kryptobaseddev/svelte-tourlight#v0.1.0
+pnpm add github:kryptobaseddev/svelte-tourlight#v0.1.1
 ```
 
 The tag includes the built `dist/`, so no build step runs on install.
 
-### Features
+### Changes in 0.1.1
+
+- Unit test files moved out of `src/lib`, so the compiled `*.spec.js` files no longer ship in `dist/`. No API changes.
+
+### Features (since 0.1.0)
 
 - Headless core (`svelte-tourlight/core`): state machine, `waitForElement`, `resolveTarget`, target tracking, evenodd clip-path spotlight, focus trap, `setInert`, keyboard handler, route matcher, persistence.
 - Styled player: `SpotlightProvider`, `SpotlightTour`, `SpotlightBeacon`, `SpotlightHighlight` and `useSpotlight()` (a reactive `Tourlight` controller).

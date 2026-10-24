@@ -9,8 +9,8 @@ import {
 	parseTourDocument,
 	validateTourDocument,
 	type TourDocument
-} from './index.js';
-import { themeName, themeStyle } from '../themes.js';
+} from '../lib/document/index.js';
+import { themeName, themeStyle } from '../lib/themes.js';
 
 const doc = (): TourDocument => ({
 	schemaVersion: 1,
@@ -150,7 +150,7 @@ describe('parse / compile / format', () => {
 
 describe('JSON Schema', () => {
 	const schema = JSON.parse(
-		readFileSync(new URL('../../../schema/tour.schema.json', import.meta.url), 'utf8')
+		readFileSync(new URL('../../schema/tour.schema.json', import.meta.url), 'utf8')
 	);
 
 	it('lists the same step fields as the validator accepts', () => {

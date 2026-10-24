@@ -1,6 +1,6 @@
 {
 	"name": "svelte-tourlight",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Svelte 5 product tours: spotlight cutouts, multi-page steps that survive reloads, click-the-real-button steps, pulsing beacons, keyboard and screen-reader support, and tours as JSON. A port inspired by react-tourlight.",
 	"license": "MIT",
 	"author": "kryptobaseddev",

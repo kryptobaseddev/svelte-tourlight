@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createTourStateMachine } from './state-machine.js';
-import { buildRoutePath, isRouteActive } from './route.js';
-import { blockerRects, generateClipPath, generateEmptyClipPath } from './clip-path.js';
+import { createTourStateMachine } from '../lib/core/state-machine.js';
+import { buildRoutePath, isRouteActive } from '../lib/core/route.js';
+import { blockerRects, generateClipPath, generateEmptyClipPath } from '../lib/core/clip-path.js';
 import {
 	clearPersistedTour,
 	createMemoryStorage,
@@ -10,8 +10,8 @@ import {
 	savePersistedTour,
 	stableStepIds,
 	toTourState
-} from './persistence.js';
-import type { SpotlightStep } from './types.js';
+} from '../lib/core/persistence.js';
+import type { SpotlightStep } from '../lib/core/types.js';
 
 const steps = (n: number): SpotlightStep[] =>
 	Array.from({ length: n }, (_, i) => ({ id: `s${i}`, target: `#t${i}`, title: `Step ${i}` }));
