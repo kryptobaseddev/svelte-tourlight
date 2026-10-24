@@ -1,0 +1,34 @@
+name: Install smoke test
+
+# Installs a release tag as a git dependency into a fresh SvelteKit app, then
+# type-checks and builds it. Run after tagging a release.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to install, e.g. v0.1.0'
+        required: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Fresh SvelteKit app
+        run: |
+          npx -y sv@1.1.1 create "$RUNNER_TEMP/consumer" --template minimal --types ts --no-add-ons --install pnpm
+          cp .github/smoke/layout.svelte "$RUNNER_TEMP/consumer/src/routes/+layout.svelte"
+          cp .github/smoke/page.svelte "$RUNNER_TEMP/consumer/src/routes/+page.svelte"
+      - name: Install from git and verify
+        working-directory: ${{ runner.temp }}/consumer
+        run: |
+          pnpm add "github:kryptobaseddev/svelte-tourlight#${{ inputs.tag }}"
+          test -f node_modules/svelte-tourlight/dist/index.js
+          pnpm exec svelte-kit sync
+          pnpm exec svelte-check --tsconfig ./tsconfig.json --threshold error
+          pnpm exec vite build
