@@ -127,7 +127,9 @@
 				middleware: [
 					offset(14),
 					flip({ padding: 8 }),
-					shift({ padding: 8 }),
+					// crossAxis: when the target is taller (or wider) than the viewport, neither
+					// side fits; slide the popover over the target so its buttons stay on screen.
+					shift({ padding: 8, crossAxis: true }),
 					...(arrowNode ? [arrow({ element: arrowNode, padding: 12 })] : [])
 				]
 			}).then(({ x, y, placement: final, middlewareData }) => {

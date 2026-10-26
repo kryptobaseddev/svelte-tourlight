@@ -1,8 +1,7 @@
-Install: `npm i svelte-tourlight@0.1.4`
+Install: `npm i svelte-tourlight@0.1.5`
 
 ### Changes
 
-- **License detection.** `LICENSE` is now the plain MIT text, so GitHub and other tools detect it as MIT. The react-tourlight credit and its license text are unchanged in `NOTICE` (shipped in the package) and the README.
-- **Focus trap test.** A browser test now checks that Tab and Shift+Tab wrap inside the tour dialog.
+- **Popovers stay on screen for tall targets.** When the spotlighted element is taller than the viewport, neither the top nor the bottom side fits, and the floating popover used to land below the fold with its buttons out of reach. The popover now also shifts on the cross axis (Floating UI `shift({ crossAxis: true })`), so it slides over the target and stays inside the viewport. A browser test covers 1024x600 and 1280x800.
 
-No API or behaviour changes.
+No API changes.
