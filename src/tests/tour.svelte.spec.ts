@@ -201,6 +201,39 @@ describe('SpotlightProvider + SpotlightTour', () => {
 		await page.viewport(1280, 800);
 	});
 
+	it('keeps the popover on screen when the target is taller than the viewport', async () => {
+		for (const [w, h] of [
+			[1024, 600],
+			[1280, 800]
+		]) {
+			await page.viewport(w, h);
+			const steps: SpotlightStep[] = [
+				{ id: 'tall', target: '#tall', title: 'Tall thing', content: 'Bigger than the screen.' }
+			];
+			const { unmount } = render(Harness, { props: { steps, tall: true } });
+			await page.getByRole('button', { name: 'Start', exact: true }).click();
+			await expect.element(dialog()).toBeVisible();
+			const tooltip = document.querySelector<HTMLElement>('.tourlight-tooltip')!;
+			expect(tooltip.dataset.sheet).toBeUndefined();
+			const target = document.querySelector<HTMLElement>('#tall')!.getBoundingClientRect();
+			expect(target.height).toBeGreaterThan(window.innerHeight);
+			await expect
+				.poll(() => {
+					const r = tooltip.getBoundingClientRect();
+					return r.top >= 0 && r.bottom <= window.innerHeight;
+				})
+				.toBe(true);
+			const done = tooltip.querySelector<HTMLElement>('[data-tourlight-primary]')!;
+			const b = done.getBoundingClientRect();
+			expect(b.top).toBeGreaterThanOrEqual(0);
+			expect(b.bottom).toBeLessThanOrEqual(window.innerHeight);
+			unmount();
+			document.body.querySelectorAll('.tourlight-portal').forEach((n) => n.remove());
+			window.scrollTo(0, 0);
+		}
+		await page.viewport(1280, 800);
+	});
+
 	it('docks the sheet at the top when the target sits low (fixed tab bar)', async () => {
 		await page.viewport(375, 700);
 		render(Harness, {
