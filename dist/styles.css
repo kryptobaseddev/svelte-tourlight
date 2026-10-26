@@ -1,0 +1,446 @@
+/* svelte-tourlight styles. Every value is a CSS variable; see themes.ts.
+   Defaults sit inside :where() so any app rule on .tourlight-root wins. */
+
+:where(.tourlight-root) {
+	--tourlight-overlay: rgba(0, 0, 0, 0.5);
+	--tourlight-bg: #ffffff;
+	--tourlight-fg: #1a1a2e;
+	--tourlight-title: #1a1a2e;
+	--tourlight-muted: #4a4a68;
+	--tourlight-border: transparent;
+	--tourlight-radius: 12px;
+	--tourlight-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+	--tourlight-padding: 20px;
+	--tourlight-max-width: 380px;
+	--tourlight-font: inherit;
+	--tourlight-title-size: 1.125rem;
+	--tourlight-content-size: 0.9375rem;
+	--tourlight-primary: #2563eb;
+	--tourlight-primary-fg: #ffffff;
+	--tourlight-primary-hover: #1d4ed8;
+	--tourlight-secondary-border: #d4d4dc;
+	--tourlight-secondary-hover: #f2f2f5;
+	--tourlight-progress-track: #e2e2e8;
+	--tourlight-progress-fill: #2563eb;
+	--tourlight-beacon: #2563eb;
+	--tourlight-focus: #2563eb;
+	--tourlight-duration: 250ms;
+	--tourlight-easing: cubic-bezier(0.2, 0.7, 0.3, 1);
+	--tourlight-z-overlay: 9998;
+	--tourlight-z-tooltip: 9999;
+}
+
+:where(.tourlight-root[data-tourlight-theme='dark']) {
+	--tourlight-overlay: rgba(0, 0, 0, 0.7);
+	--tourlight-bg: #1e1e2e;
+	--tourlight-fg: #e4e4ef;
+	--tourlight-title: #f0f0f8;
+	--tourlight-muted: #b4b4cc;
+	--tourlight-border: rgba(255, 255, 255, 0.08);
+	--tourlight-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+	--tourlight-primary: #818cf8;
+	--tourlight-primary-fg: #11111b;
+	--tourlight-primary-hover: #a5b4fc;
+	--tourlight-secondary-border: rgba(255, 255, 255, 0.16);
+	--tourlight-secondary-hover: rgba(255, 255, 255, 0.08);
+	--tourlight-progress-track: rgba(255, 255, 255, 0.12);
+	--tourlight-progress-fill: #818cf8;
+	--tourlight-beacon: #818cf8;
+	--tourlight-focus: #a5b4fc;
+}
+
+@media (prefers-color-scheme: dark) {
+	:where(.tourlight-root[data-tourlight-theme='auto']) {
+		--tourlight-overlay: rgba(0, 0, 0, 0.7);
+		--tourlight-bg: #1e1e2e;
+		--tourlight-fg: #e4e4ef;
+		--tourlight-title: #f0f0f8;
+		--tourlight-muted: #b4b4cc;
+		--tourlight-border: rgba(255, 255, 255, 0.08);
+		--tourlight-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+		--tourlight-primary: #818cf8;
+		--tourlight-primary-fg: #11111b;
+		--tourlight-primary-hover: #a5b4fc;
+		--tourlight-secondary-border: rgba(255, 255, 255, 0.16);
+		--tourlight-secondary-hover: rgba(255, 255, 255, 0.08);
+		--tourlight-progress-track: rgba(255, 255, 255, 0.12);
+		--tourlight-progress-fill: #818cf8;
+		--tourlight-beacon: #818cf8;
+		--tourlight-focus: #a5b4fc;
+	}
+}
+
+/* ---- Overlay ---- */
+
+.tourlight-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: var(--tourlight-z-overlay);
+	background: var(--tourlight-overlay);
+	pointer-events: auto;
+	will-change: clip-path;
+	transition: clip-path var(--tourlight-duration) var(--tourlight-easing);
+}
+
+.tourlight-overlay[data-loading] {
+	opacity: 0.4;
+}
+
+.tourlight-blocker {
+	position: fixed;
+	z-index: var(--tourlight-z-overlay);
+	background: transparent;
+	pointer-events: auto;
+}
+
+.tourlight-loading {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: var(--tourlight-z-tooltip);
+	width: 32px;
+	height: 32px;
+	margin: -16px 0 0 -16px;
+	border-radius: 50%;
+	border: 3px solid var(--tourlight-progress-track);
+	border-top-color: var(--tourlight-progress-fill);
+	animation: tourlight-spin 0.8s linear infinite;
+	pointer-events: none;
+}
+
+@keyframes tourlight-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* ---- Tooltip ---- */
+
+.tourlight-tooltip {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: var(--tourlight-z-tooltip);
+	box-sizing: border-box;
+	width: max-content;
+	max-width: min(var(--tourlight-max-width), calc(100vw - 32px));
+	padding: var(--tourlight-padding);
+	border: 1px solid var(--tourlight-border);
+	border-radius: var(--tourlight-radius);
+	background: var(--tourlight-bg);
+	color: var(--tourlight-fg);
+	box-shadow: var(--tourlight-shadow);
+	font-family: var(--tourlight-font);
+	pointer-events: auto;
+	opacity: 0;
+	transform: translateY(6px);
+	transition:
+		opacity var(--tourlight-duration) var(--tourlight-easing),
+		transform var(--tourlight-duration) var(--tourlight-easing);
+}
+
+.tourlight-tooltip[data-shown] {
+	opacity: 1;
+	transform: none;
+}
+
+.tourlight-tooltip[data-centered] {
+	top: 50%;
+	left: 50%;
+	width: min(var(--tourlight-max-width), calc(100vw - 32px));
+	transform: translate(-50%, -48%);
+}
+
+.tourlight-tooltip[data-centered][data-shown] {
+	transform: translate(-50%, -50%);
+}
+
+/* Sheet on phones: docked at the bottom, or at the top for low targets. */
+.tourlight-tooltip[data-sheet] {
+	top: auto;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: auto;
+	max-width: none;
+	max-height: 45dvh;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding-bottom: calc(var(--tourlight-padding) + env(safe-area-inset-bottom, 0px));
+	border-radius: var(--tourlight-radius) var(--tourlight-radius) 0 0;
+	transform: translateY(16px);
+}
+
+.tourlight-tooltip[data-sheet][data-shown] {
+	transform: none;
+}
+
+.tourlight-tooltip[data-sheet='top'] {
+	top: 0;
+	bottom: auto;
+	padding-top: calc(var(--tourlight-padding) + env(safe-area-inset-top, 0px));
+	padding-bottom: var(--tourlight-padding);
+	border-radius: 0 0 var(--tourlight-radius) var(--tourlight-radius);
+	transform: translateY(-16px);
+}
+
+.tourlight-title {
+	margin: 0 40px 8px 0;
+	font-size: var(--tourlight-title-size);
+	font-weight: 600;
+	line-height: 1.3;
+	color: var(--tourlight-title);
+}
+
+.tourlight-content {
+	font-size: var(--tourlight-content-size);
+	line-height: 1.55;
+	color: var(--tourlight-muted);
+}
+
+.tourlight-content > :first-child {
+	margin-top: 0;
+}
+
+.tourlight-content > :last-child {
+	margin-bottom: 0;
+}
+
+.tourlight-close {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--tourlight-muted);
+	cursor: pointer;
+}
+
+.tourlight-close:hover {
+	background: var(--tourlight-secondary-hover);
+	color: var(--tourlight-fg);
+}
+
+.tourlight-progress {
+	height: 4px;
+	margin-top: 16px;
+	overflow: hidden;
+	border-radius: 2px;
+	background: var(--tourlight-progress-track);
+}
+
+.tourlight-progress-bar {
+	height: 100%;
+	border-radius: inherit;
+	background: var(--tourlight-progress-fill);
+	transition: width var(--tourlight-duration) var(--tourlight-easing);
+}
+
+.tourlight-footer {
+	margin-top: 12px;
+}
+
+.tourlight-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.tourlight-step-info {
+	margin-right: auto;
+	font-size: 0.8125rem;
+	color: var(--tourlight-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.tourlight-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0 16px;
+	border: 1px solid transparent;
+	border-radius: 8px;
+	font: inherit;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		background 150ms ease,
+		border-color 150ms ease;
+}
+
+.tourlight-button--primary {
+	background: var(--tourlight-primary);
+	color: var(--tourlight-primary-fg);
+}
+
+.tourlight-button--primary:hover {
+	background: var(--tourlight-primary-hover);
+}
+
+.tourlight-button--secondary {
+	border-color: var(--tourlight-secondary-border);
+	background: transparent;
+	color: var(--tourlight-fg);
+}
+
+.tourlight-button--secondary:hover {
+	background: var(--tourlight-secondary-hover);
+}
+
+.tourlight-action {
+	margin-top: 12px;
+}
+
+.tourlight-root :focus-visible {
+	outline: 2px solid var(--tourlight-focus);
+	outline-offset: 2px;
+}
+
+.tourlight-arrow {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	background: var(--tourlight-bg);
+	border: 1px solid var(--tourlight-border);
+	transform: rotate(45deg);
+	pointer-events: none;
+}
+
+.tourlight-arrow[data-side='bottom'] {
+	top: -7px;
+	border-right: 0;
+	border-bottom: 0;
+}
+
+.tourlight-arrow[data-side='top'] {
+	bottom: -7px;
+	border-top: 0;
+	border-left: 0;
+}
+
+.tourlight-arrow[data-side='right'] {
+	left: -7px;
+	border-top: 0;
+	border-right: 0;
+}
+
+.tourlight-arrow[data-side='left'] {
+	right: -7px;
+	border-bottom: 0;
+	border-left: 0;
+}
+
+.tourlight-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ---- Beacon: a 44px hit area around a small pulsing dot ---- */
+
+.tourlight-beacon {
+	position: fixed;
+	z-index: var(--tourlight-z-tooltip);
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	cursor: pointer;
+	transform: translate(-50%, -50%);
+}
+
+.tourlight-beacon-dot {
+	position: relative;
+	width: var(--tourlight-beacon-size, 12px);
+	height: var(--tourlight-beacon-size, 12px);
+	border-radius: 50%;
+	background: var(--tourlight-beacon);
+	box-shadow: 0 0 0 2px var(--tourlight-bg);
+}
+
+.tourlight-beacon-dot::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: var(--tourlight-beacon);
+	animation: tourlight-pulse 1.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+.tourlight-beacon:focus-visible {
+	outline: 2px solid var(--tourlight-focus);
+	outline-offset: -6px;
+	border-radius: 50%;
+}
+
+@keyframes tourlight-pulse {
+	0% {
+		transform: scale(1);
+		opacity: 0.55;
+	}
+	100% {
+		transform: scale(2.8);
+		opacity: 0;
+	}
+}
+
+/* ---- Reduced motion: no tweens, no pulse ---- */
+
+.tourlight-root[data-reduced-motion] .tourlight-overlay,
+.tourlight-root[data-reduced-motion] .tourlight-tooltip,
+.tourlight-root[data-reduced-motion] .tourlight-progress-bar,
+.tourlight-root[data-reduced-motion] .tourlight-button {
+	transition: none;
+}
+
+.tourlight-root[data-reduced-motion] .tourlight-loading,
+.tourlight-root[data-reduced-motion] .tourlight-beacon-dot::after {
+	animation: none;
+}
+
+.tourlight-root[data-reduced-motion] .tourlight-beacon-dot::after {
+	opacity: 0.35;
+	transform: scale(1.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tourlight-overlay,
+	.tourlight-tooltip,
+	.tourlight-progress-bar,
+	.tourlight-button {
+		transition: none;
+	}
+
+	.tourlight-loading,
+	.tourlight-beacon-dot::after {
+		animation: none;
+	}
+
+	.tourlight-beacon-dot::after {
+		opacity: 0.35;
+		transform: scale(1.8);
+	}
+}
